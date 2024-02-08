@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
-
+import VideoPlayer from './VideoPlayer';
+import FooterActivities from './FooterActivities';
+import TimeLine from './Timeline';
+import { useRef, useState } from "react";
 function App() {
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='interactive-video'>
+          <div className='upper-content'>
+
+          </div>
+          <VideoPlayer
+            videoRef={videoRef}
+            isPlaying={isPlaying} setIsPlaying={setIsPlaying}
+          />
+          <TimeLine videoRef={videoRef}
+            isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+          <FooterActivities />
     </div>
+
   );
 }
-
 export default App;

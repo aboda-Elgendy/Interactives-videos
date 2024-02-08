@@ -11,3 +11,280 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.upper-content{
+  height: 35px;
+  background-color: #00a8ff;
+}
+.interactive-video{
+  background-color: black;
+  overflow: hidden;
+}
+.container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow: hidden;
+
+}
+.controls {
+  display: flex;
+  background-color: #071a23;
+  width: 100%;
+}
+.container:hover .controls {
+  opacity: 1;
+}
+.controls button {
+  background: transparent;
+  color: #fff;
+  font-weight: bolder;
+  text-shadow: 2px 1px 2px #071a23;
+  border: none;
+  cursor: pointer;
+}
+ .timeline {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  
+}
+.controls .timeline .bar{
+  background: #ccc;
+  height: 10px;
+  flex: 1;
+  border-radius: 34px;
+  position: relative;
+
+}
+ .controls .timeline .bar .inner{
+  background:#00a8ff;
+  width: 50%;
+  height: 100%;
+  border-radius: 15px;
+}
+.fa {
+  font-size: 20px !important;
+}
+ /*this style related to toggle icon  */ 
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  margin: 5px; 
+  margin-top : 10px;  
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #00a8ff;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #00a8ff;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.volume-icon{
+  font-size: 25px;
+  padding: 5px;
+  padding-top: 15px;
+  padding-right: 10px;
+}
+.play-pause-icon {
+  padding: 15px;
+  font-size: 25px;
+
+}
+.interactive-mode{
+  color: #ccc;
+  padding-top: 15px;
+  font-family: 'npprimarysemibold', Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  line-height: 24px;
+ padding-left: 20px;
+}
+.progress-time{
+  color: #ccc;
+  padding-top: 15px;
+  font-family: 'npprimarysemibold', Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  line-height: 20px;
+ padding-left: 15px;
+ padding-right: 17px;
+}
+.volume-bar {
+  position: absolute;
+  transition: opacity 0.3s ease;
+  transform: rotate(270deg);
+  left: 260px;
+  top: -65px;
+}
+
+.volume-slider {
+  width: 100%;
+}
+
+.question-indicators {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  
+
+}
+
+.question-indicator {
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  background-color: #00a8ff;
+  border-radius: 50%;
+  cursor: pointer;
+  top: -20px;
+}
+.activities{
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  background-color: #152d39;
+  height: 14%;
+
+}
+.add-questions{
+  font-size: larger;
+  color: rgb(49, 49, 145);
+  height: fit-content;
+  margin-top: 40px;
+
+}
+ /* activities and questions  */
+.vl {
+  border-left: 3px solid #ccc;
+  position: absolute;
+  left: 50%;
+  width: 200px;
+  height: 100px;
+  margin-top: 10px;
+}
+.add-activity{
+  position: absolute;
+  left: 46%;
+  width: 40px;
+  height: 40px;
+  margin-top: 25px;
+  border-radius: 5px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.3s ease-in-out;
+}
+.add-activity:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+  color: aqua;
+  background-color:  #071a23;
+}
+
+/*styling  the content of the model*/
+
+.content{ 
+ display: flex;
+ flex-direction: row;
+ justify-content: space-between;
+
+}
+.question-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+img {
+  width: 62px; /* Adjust the width and height as needed */
+  height: 62px;
+}
+.question-button:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+  color: aqua;
+  background-color:  #071a23;
+  border-radius: 10px;
+}
+/* 
+end of the popup content styling 
+*/
+.tooltip {
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 100px;
+  background-color:navy;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  bottom: 75%; 
+  z-index: 1;
+  left: 46%;
+  margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+
