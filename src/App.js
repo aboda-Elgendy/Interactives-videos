@@ -1,4 +1,4 @@
-import VideoPlayer from './VideoPlayer';
+import InteractiveVideo from './InteractiveVideo';
 import FooterActivities from './FooterActivities';
 import TimeLine from './Timeline';
 import { useRef, useState } from "react";
@@ -11,7 +11,7 @@ function App() {
           <div className='upper-content'>
 
           </div>
-          <VideoPlayer
+          <InteractiveVideo
             videoRef={videoRef}
             isPlaying={isPlaying} setIsPlaying={setIsPlaying}
           />

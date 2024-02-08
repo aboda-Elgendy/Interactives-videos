@@ -1,5 +1,5 @@
 import React from 'react';
-const VideoPlayer = ({videoRef , isPlaying , setIsPlaying}) => {
+const InteractiveVideo = ({videoRef , isPlaying , setIsPlaying}) => {
 
 
     const handlePlayPause = () => {
@@ -21,4 +21,4 @@ const VideoPlayer = ({videoRef , isPlaying , setIsPlaying}) => {
     );
 };
 
-export default VideoPlayer;
+export default InteractiveVideo;
