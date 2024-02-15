@@ -165,7 +165,8 @@ input:checked + .slider:before {
   transition: opacity 0.3s ease;
   transform: rotate(270deg);
   left: 260px;
-  top: -65px;
+  top: 446px;
+  z-index: 1;
 }
 
 .volume-slider {
@@ -177,8 +178,6 @@ input:checked + .slider:before {
   left: 0;
   right: 0;
   display: flex;
-  
-
 }
 
 .question-indicator {
@@ -217,9 +216,7 @@ input:checked + .slider:before {
 }
 .add-activity{
   position: absolute;
-  left: 46%;
-  width: 40px;
-  height: 40px;
+  left: 36%;
   margin-top: 25px;
   border-radius: 5px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
@@ -236,7 +233,7 @@ input:checked + .slider:before {
 .content{ 
  display: flex;
  flex-direction: row;
- justify-content: space-between;
+ justify-content: space-around;
 
 }
 .question-button {
@@ -287,4 +284,93 @@ end of the popup content styling
   visibility: visible;
 }
 
+.modal-footer-background{
+  background:  #071a23;
+  position:fixed;
+  bottom:0;
+  width:100%;
+  height:80px;   /* height of the footer */
 
+}
+
+
+.textArea-Size{
+  max-width: 70%;
+  left:10%;
+  top:10%;
+  position: relative;
+}
+.options-groups{
+  position: relative;
+  left:10%;
+  margin-top: 30px;
+  display: flex;
+  width: 80%;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.check-box input{
+  width: 40px;
+  height: 40px;
+}
+.answer-button{
+
+  position: fixed;
+  left: 40%;
+  width: 500px;
+  height: 50px;
+  bottom: 2%;
+
+}
+.question-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background-color: #152d39;
+  color: white;
+  z-index: 1;
+  font-family: 'npprimaryextrabold', Helvetica, Arial, sans-serif;
+  font-size: 18px;
+
+}
+.question-content{
+margin-top: 20px;
+margin-left: 85px;
+font-size: 32px;
+
+}
+.question-img{
+margin-right: 10px;
+}
+.option-question{
+  margin-left: 10px;
+}
+.question-buttons{
+  
+  position: absolute;
+  bottom: 25px;
+  right: 1px;
+
+}
+.option_point{
+    height: 20px;
+    width: 20px;
+    background-color: #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-top: 17px;
+}
+.trash-icon{
+  margin-top: 10px;
+  margin-left: 38px;
+  font-size: large;
+  color: blue;
+  border: none;
+  position: relative;
+  left: 10px;
+  background: none;
+}

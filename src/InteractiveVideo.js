@@ -1,22 +1,53 @@
-import React from 'react';
-const InteractiveVideo = ({videoRef , isPlaying , setIsPlaying}) => {
+import React, { useEffect, useState } from 'react';
+import ViewQuestion from "./questionsModels/viewQuestion";
+import axios from 'axios';
+const InteractiveVideo = ({ videoRef, setCurrentQuestionTime , currentQuestionTime, interactiveMode ,isPlaying ,setIsPlaying, questions , setFullStyle, hitQuestion, setHitQuestion}) => {
+    const [Question , setQuestion] = useState([]);
+    const questionsTimeStamp  = []; 
 
-
-    const handlePlayPause = () => {
+    questions.forEach(question => {
+        questionsTimeStamp[question.time] = question
+    });
+    
+    useEffect(() => {
         const video = videoRef.current;
-        setIsPlaying(!isPlaying);
+        const handleTimeUpdate = () => {
+            const curr = video.currentTime ;
+            const question = questionsTimeStamp[Math.floor(curr)];
+            if(question && !hitQuestion && currentQuestionTime!== question.time){
+                setQuestion(question);
+                setCurrentQuestionTime(question.time);    
+                setIsPlaying(false)
+                video.pause();
+                setHitQuestion(!hitQuestion);
+                setFullStyle({background: "#152d39"})
+            }    
+        };
+        video.addEventListener('timeupdate', handleTimeUpdate);
 
-        if (isPlaying) {
-            video.pause();
-        } else {
-            video.play();
-        }
+        return () => {
+            video.removeEventListener('timeupdate', handleTimeUpdate);
+        };
+    } )
+    const  [videoUrl, setVideoUrl] = useState(null)
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/videos/1');
+        setVideoUrl(response.data.video_url);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
 
+    fetchData();
+  }, []); 
     return (
-        <div onClick={handlePlayPause}className="container">
-            <video ref={videoRef}  src="https://cf.nearpod.com/neareducation/new/interactive-video/d1366796-c71f-4245-8a84-1b6e13211f77/medium.mp4?AWSAccessKeyId=AKIA5LQSO4AXLNJOYW5K&Expires=2147483646&Signature=v8ciuYGx0bGApGVW4%2F4I%2BOGW2zk%3D" id="video"></video>
-
+        <div className="container">
+         <video ref={videoRef} src= {videoUrl} id="video"></video>
+         {hitQuestion && <ViewQuestion setFullStyle = {setFullStyle} setHitQuestion = {setHitQuestion}videoRef = {videoRef } isPlaying = {isPlaying} setIsPlaying= {setIsPlaying}Question={Question} interactiveMode = {interactiveMode}/> }
         </div>
     );
 };

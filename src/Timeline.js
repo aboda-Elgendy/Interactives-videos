@@ -2,45 +2,24 @@ import React, { useRef, useState, useEffect } from "react";
 import VolumeControl from "./Volume";
 import '../node_modules/@fortawesome/fontawesome-free/css/all.css';
 
-const TimeLine = ({videoRef , isPlaying , setIsPlaying})=>{
+const TimeLine = ({videoRef ,setCurrentQuestionTime,setFullStyle, isPlaying , setHitQuestion ,setIsPlaying , questions, interactiveMode})=>{
 const progressBarRef = useRef(null);
 const [startPointPosition, setStartPointPosition] = useState(0);
 
     const [isToggle, setIsToggle] = useState(true);
-    const [questions, setQuestions] = useState([
-        {
-            time: 46, // Time in seconds
-            question: 'What is the capital of France?',
-        },
-        {
-            time: 10,
-            question: 'Who painted the Mona Lisa?',
-        },
-        {
-            time: 20,
-            question: 'Who painted the Mona Lisa?',
-        },
-        {
-            time: 1,
-            question: 'Who painted the Mona Lisa?',
-        },
-        {
-            time: 50, // Time in seconds
-            question: 'What is the capital of France?',
-        },
-    ]);
-
     const [progress, setProgress] = useState(0);
     const [progressTime, setProgressTime] = useState("00:00");
     const [totalDuration, setTotalDuration] = useState("00:00");
     const [videoDuration, setVideoDuration] = useState(0);
-
     
+   
     const renderQuestionIndicators = () => {
         
         return questions.map((question) => (
             <div
                 key={question.time}
+                data-toggle= {interactiveMode? "tooltip":""}
+                title= {interactiveMode? question.question:""}
                 style={{ left: `${((question.time ) / videoDuration) * 100 +startPointPosition }%`  }}
                 className='question-indicator'
             ></div>
@@ -50,11 +29,12 @@ const [startPointPosition, setStartPointPosition] = useState(0);
     const handleResize = () => {
         const progressBar = progressBarRef.current;
         const rect = progressBar.getBoundingClientRect();
-        setStartPointPosition((rect.left/window.innerWidth) );
+        setStartPointPosition((rect.left/window.innerWidth)-1 );
       };
     
       useEffect(() => {
         handleResize(); // Initial position calculation
+        
     
         window.addEventListener('resize', handleResize);
         return () => {
@@ -65,7 +45,8 @@ const [startPointPosition, setStartPointPosition] = useState(0);
     const handlePlayPause = () => {
         const video = videoRef.current;
         setIsPlaying(!isPlaying);
-
+        setHitQuestion(false)
+        setFullStyle({background: "black"})
         if (isPlaying) {
             video.pause();
         } else {
@@ -103,11 +84,13 @@ const [startPointPosition, setStartPointPosition] = useState(0);
         const progressPercentage = (clickX / progressBarWidth) * 100;
 
         setProgress(progressPercentage);
-
+        setHitQuestion(false)
+        setFullStyle({background: "black"})
         const video = videoRef.current;
         const duration = video.duration;
         const currentTime = (progressPercentage / 100) * duration;
         video.currentTime = currentTime;
+        setCurrentQuestionTime(currentTime)
     };
 
 
@@ -134,12 +117,14 @@ const [startPointPosition, setStartPointPosition] = useState(0);
     }
     return (
         <div className="controls">
+           {interactiveMode && <>
         <span className='interactive-mode'> Interactive Mode </span>
         <label className="switch"
         >
             <input onClick={toggleActivities} type="checkbox" defaultChecked />
             <span className="slider round"></span>
         </label>
+        </>}
         <button onClick={handlePlayPause}>
             {isPlaying ?
                 <i
@@ -150,7 +135,7 @@ const [startPointPosition, setStartPointPosition] = useState(0);
                 >  </i>
             }
         </button>
-        <VolumeControl videoRef={videoRef} />
+        <VolumeControl videoRef={videoRef} interactiveMode= {interactiveMode} />
 
         <div className="timeline"
             ref={progressBarRef}

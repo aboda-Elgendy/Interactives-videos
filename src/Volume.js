@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
-const VolumeControl = ({ videoRef }) => {
+const VolumeControl = ({ videoRef ,interactiveMode }) => {
 
     const [isVolumeBarVisible_, setVolumeBarVisible_] = useState(false);
     const [volume_, setVolume_] = useState(100);
     const [isMuted, setIsmuted] = useState(0);
-
+    const style = {left: "23px"}
     const handleVolumeIconHover = () => {
         setVolumeBarVisible_(true);
     };
@@ -50,7 +50,7 @@ const VolumeControl = ({ videoRef }) => {
                 </button>
             </div>
             {isVolumeBarVisible_ && (
-                <div className="volume-bar">
+                <div  style = {interactiveMode?{}:style} className="volume-bar">
                     <input
                         type="range"
                         min="0"

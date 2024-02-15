@@ -1,65 +1,80 @@
-import React, { useState, useRef } from 'react'
-import MultiChoices from "./MutiChoices";
-import TrueFalseQuestion from "./TrueFalseQuestion";
+import React, { useState , useEffect} from 'react'
+import MultiChoices from "./MultiChoices";
 import OpenEndedQuestion from "./OpenEndedQuestion";
 import Question from "../assets/Question.png";
-import TF from '../assets/TF.png';
 import multi_choices from "../assets/multi_choices.jpg";
 
-export default function AddQuestions() {
-  
-  const modalRef = useRef(null);
-  const [isTrueFalseVisible, setIsTrueFalseVisible] = useState(0);
-  const [isOpenEndedQuestionVisiable, setIsOpenEndedQuestionVisiable] = useState(0);
-  const [isMutiChoicesVisiable  , setIsMutiChoicesVisiable ] = useState(0);
 
-  const handleTrueFalseQuestion = () => {
-    handleCloseModal();
-    setIsTrueFalseVisible(!isTrueFalseVisible);
-  }
+export default function AddQuestions({videoRef, hitQuestion, setIsPlaying}) {
+ 
+  const [isPopUpVisiable , setIsPopupVisiable] = useState(false); 
+  const [isOpenEndedQuestionVisiable, setIsOpenEndedQuestionVisiable] = useState(false);
+  const [isMutiChoicesVisiable  , setIsMutiChoicesVisiable ] = useState(false);
+  const [progressTime, setProgressTime] = useState("00:00");
+  const [currentTimeInSec , setCurrentTimeInsec] = useState(0);
   const handleOpenEndedQuestion = () => {
-    handleCloseModal();
     setIsOpenEndedQuestionVisiable(!isOpenEndedQuestionVisiable);
+    setIsPopupVisiable(false);
+
   }
   const handleMutiChoicesQuestion = () => {
-    handleCloseModal();
     setIsMutiChoicesVisiable(!isMutiChoicesVisiable);
+    setIsPopupVisiable(false);
+
   }
- 
-  const handleCloseModal = () => {
-    const modalElement = modalRef.current;
-    modalElement.setAttribute('data-bs-dismiss', 'modal');
-  };
+  const handleOpenOuterModal = ()=>{
+    setIsPopupVisiable(true);
+    setIsPlaying(false);
+    const video = videoRef.current;
+    video.pause();
+  }
+  const handleCloseOuterModal = ()=>{
+    setIsPopupVisiable(false);
+  }
+     const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60).toString().padStart(2, "0");
+        return `${minutes}:${seconds}`;
+    };
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const handleTimeUpdate = () => {
+        setProgressTime(formatTime(video.currentTime))
+        setCurrentTimeInsec(video.currentTime);
+    };
+
+    video.addEventListener('timeupdate', handleTimeUpdate);
+
+    return () => {
+        video.removeEventListener('timeupdate', handleTimeUpdate);
+    };
+});
   return (
 
     <div>
-      <button  type="button" className={`add-activity "btn btn-primary`} data-bs-toggle="modal" data-bs-target="#exampleModal">
-        <i class="fa fa-tasks" aria-hidden="true"></i>
+      <button onClick = {handleOpenOuterModal}  type="button" className={hitQuestion?`btn btn-primary add-activity disabled`:`btn btn-primary add-activity`} >
+        Add Activity at {progressTime}
       </button>
-
-      {1 && (
-        <div ref={modalRef} class="modal" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      
+      {isPopUpVisiable && (
+        <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"> Add Activity </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title" > Add Activity </h5>
+                <button  onClick = {handleCloseOuterModal}type="button" class="btn-close" ></button>
               </div>
               <div class="modal-body">
                 <div className="content">
-                  <button onClick={handleMutiChoicesQuestion} type="button" className={`question-button`} data-bs-toggle="modal" data-bs-target="#exampleModal" >
+                  <button onClick={handleMutiChoicesQuestion} type="button" className={`question-button`}  >
                     <img src={multi_choices} alt="Icon" />
                     <p> Multi Choices Question  </p>
 
                   </button>
-                  <button onClick={handleOpenEndedQuestion} type="button" className={`question-button`} data-bs-toggle="modal" data-bs-target="#exampleModal" >
+                  <button onClick={handleOpenEndedQuestion} type="button" className={`question-button`}  >
                     <img src={Question} alt="Icon" />
                     <p> Open Ended Question  </p>
-
-                  </button>
-                  <button onClick={handleTrueFalseQuestion} type="button" className={`question-button`} data-bs-toggle="modal" data-bs-target="#exampleModal" >
-                    <img src={TF} alt="Icon" />
-                    <p> True/False </p>
 
                   </button>
                 </div>
@@ -69,15 +84,18 @@ export default function AddQuestions() {
           </div>
         </div>
       )}
-      {
-        isTrueFalseVisible && <TrueFalseQuestion/>
+      
+     
+        {
+        isMutiChoicesVisiable ?  <MultiChoices currentTimeInSec = {currentTimeInSec} setIsMutiChoicesVisiable = { setIsMutiChoicesVisiable } isMutiChoicesVisiable = {isMutiChoicesVisiable} /> : <></> 
       }
         {
-        isOpenEndedQuestionVisiable && <MultiChoices/>
+        isOpenEndedQuestionVisiable ?  <OpenEndedQuestion currentTimeInSec = {currentTimeInSec} setIsOpenEndedQuestionVisiable = { setIsOpenEndedQuestionVisiable } isOpenEndedQuestionVisiable = {isOpenEndedQuestionVisiable} /> : <></> 
       }
-        {
-        isMutiChoicesVisiable && <OpenEndedQuestion/>
-      }
+       
+       {(isPopUpVisiable ) && (
+        <div className="modal-backdrop show"></div>
+      )}
     </div>
   )
 }
