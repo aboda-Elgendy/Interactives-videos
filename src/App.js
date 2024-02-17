@@ -26,15 +26,7 @@ function App() {
 
     }
   };
-  const [questions, setQuestions] = useState([
-    {
-      time: 1,
-      questionBody: 'Who painted the Mona Lisa?',
-      options: [{ value: "cairo", optionId: 1 }, { value: "Paris", optionId: 2 }, { value: "italy", optionId: 3 }, { value: "Giza", optionId: 4 }],
-      answer: [2]
-    },
-    
-  ]);
+  const [questions, setQuestions] = useState([]);
 
 
 
@@ -63,7 +55,7 @@ function App() {
           hitQuestion={hitQuestion}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}
-          questions={questions}
+          questions={questions || []}
           interactiveMode={interactiveMode}
           setCurrentQuestionTime = {setCurrentQuestionTime}
           currentQuestionTime = {currentQuestionTime}
@@ -76,7 +68,7 @@ function App() {
         setCurrentQuestionTime = {setCurrentQuestionTime}
         setFullStyle={setFullStyle}
         setHitQuestion={setHitQuestion}
-        isPlaying={isPlaying} setIsPlaying={setIsPlaying} questions={questions} />
+        isPlaying={isPlaying} setIsPlaying={setIsPlaying} questions={questions || []} />
 
       <FooterActivities         
        setFullStyle={setFullStyle}

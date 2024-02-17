@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ViewQuestion from "./questionsModels/viewQuestion";
 import axios from 'axios';
-const InteractiveVideo = ({ videoRef, setCurrentQuestionTime , currentQuestionTime, interactiveMode ,isPlaying ,setIsPlaying, questions , setFullStyle, hitQuestion, setHitQuestion}) => {
-    const [Question , setQuestion] = useState([]);
-    const questionsTimeStamp  = []; 
+const InteractiveVideo = ({ videoRef, setCurrentQuestionTime , currentQuestionTime, interactiveMode ,isPlaying ,setIsPlaying, questions= [] , setFullStyle, hitQuestion, setHitQuestion}) => {
+   
+  
+  const [Question , setQuestion] = useState([]);
+    const questionsTimeStamp  = useMemo(()=>{ 
+      const  timeStamp = {};
+      questions.forEach(question => {
+        timeStamp[question.time] = question
+  } )
+  return timeStamp;
+ } , [questions]); 
+    
+ 
+    
 
-    questions.forEach(question => {
-        questionsTimeStamp[question.time] = question
-    });
     
     useEffect(() => {
         const video = videoRef.current;

@@ -5,28 +5,34 @@ import OpenEndedQuestion from './OpenEndedQuestion';
 import multi_choices from "../assets/multi_choices.jpg";
 import EquationEditor from "./textArea"
 import axios from 'axios';
+import Swal from 'sweetalert2'
+
 export default function ViewQuestion({ Question, setFullStyle, setHitQuestion, setIsPlaying, isPlaying, videoRef, interactiveMode }) {
   const style = { 'margin-left': "10px" }
-  const [selectedOptions, setSelectedOptions] = useState([]);
   const [isCheckboxValid, setIsCheckboxValid] = useState(true);
   const [editEnabled, setEditEnabled] = useState(false);
-  const [showSave , setShowSave ] = useState(true);
+  const [editSave, setEditSave] = useState(false);
   const [allOptions, setAllOptions] = useState(Question.options.map((option) => ({ ...option, checked: false })));
   const [answerBody, setAnswerBody] = useState("");
 
   const video = videoRef.current;
-
-  const handleCheckboxChange = (event , id) => {
+  const sweetAlert = ({ title, text, icon }) => {
+    return Swal.fire({
+      title: `${title}`,
+      text: `${text}`,
+      icon: `${icon}`
+    });
+  }
+  const handleCheckboxChange = (event, id) => {
     const isChecked = event.target.checked;
 
     if (isChecked) {
-      setSelectedOptions((prevOptions) => [...prevOptions, id]);
+      setAllOptions((options)=>options.map(option=> option.optionId ===  id ? {...option , checked :true}: option ))
       setIsCheckboxValid(true);
 
     } else {
-      setSelectedOptions((prevOptions) =>
-        prevOptions.filter((option) => option !== id)
-      );
+   
+      setAllOptions((options)=>options.map(option=> option.optionId ===  id ? {...option , checked :false}: option ));
     }
   };
 
@@ -44,13 +50,27 @@ export default function ViewQuestion({ Question, setFullStyle, setHitQuestion, s
     const video = videoRef.current;
     video.pause();
     setIsPlaying(false);
-    const confirmed = window.confirm(`are you sure to delete that Question with id : ${Question.id}`);
-    if(confirmed){
-      axios.delete(`http://localhost:8080/api/videos/1/questions/${Question.id}`).then((res) => {
-        alert(res.data.message);
-        handleSkipTheQuestion();
-      })
-    }
+    Swal.fire({
+      title: `are you sure want to delete that Question `,
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      denyButtonText: 'No',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-1 right-gap',
+        confirmButton: 'order-2',
+        denyButton: 'order-3',
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`http://localhost:8080/api/videos/1/questions/${Question.id}`).then((res) => {
+          sweetAlert({ title: "Good job!", text: res.data.message, icon: "success" });
+          handleSkipTheQuestion();
+        })
+      }
+    })
+
   }
   const handleEditTheQuestion = () => {
     const video = videoRef.current;
@@ -59,13 +79,15 @@ export default function ViewQuestion({ Question, setFullStyle, setHitQuestion, s
     setIsPlaying(false);
   }
   const formatResponse = () => {
+    const selectedOptions = allOptions.map((option)=> option.checked ? option.optionId : false).filter((option)=> option !== false)
     const formattedResponse = {
-      student_id:1,
-      answer : Question.type ===1 ? selectedOptions.join('|') :  answerBody
+      student_id: 1,
+      answer: Question.type === 1 ? selectedOptions.join('|') : answerBody
     }
     return formattedResponse;
   }
   const handleFormSubmit = (event) => {
+    const selectedOptions = allOptions.map((option)=> option.checked ? option.optionId : false).filter((option)=> option !== false)
 
     event.preventDefault();
 
@@ -73,14 +95,20 @@ export default function ViewQuestion({ Question, setFullStyle, setHitQuestion, s
       setIsCheckboxValid(false);
       return;
     }
-    if(answerBody=== '' && Question.type ===2){
+    if (answerBody === '' && Question.type === 2) {
       setIsCheckboxValid(false);
       return;
     }
     const formattedResponse = formatResponse();
-    axios.post(`http://localhost:8080/api/videos/1/questions/${Question.id}/answer` , formattedResponse).then((res)=>{
-      alert(res.data.message);
-    })
+    if (editSave) {
+      axios.put(`http://localhost:8080/api/videos/1/questions/${Question.id}/answer`, formattedResponse).then((res) => {
+        sweetAlert({ title: "Good job!", text: res.data.message, icon: "success" });
+      })
+    } else {
+      axios.post(`http://localhost:8080/api/videos/1/questions/${Question.id}/answer`, formattedResponse).then((res) => {
+        sweetAlert({ title: "Good job!", text: res.data.message, icon: "success" });
+      })
+    }
     handleSkipTheQuestion();
     setTimeout(() => {
       const video = videoRef.current;
@@ -90,17 +118,24 @@ export default function ViewQuestion({ Question, setFullStyle, setHitQuestion, s
     }, 10)
     return;
   };
-  const [questionAnswer, setQuestionAnswer] = useState(null);
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/api/videos/1/questions/${Question.id}/answer`);
-        setQuestionAnswer(response.data.answer);
+        const questionAnswer =  response.data.answer ;
         if (questionAnswer) {
-          setShowSave(false)
-          setAllOptions(allOptions.map(element =>(questionAnswer.split('|').includes(`${element.optionId}`) ? {...element , checked :true} : element )));
+          setEditSave(true)
+          console.log("test")
+
+          if (Question.type === 1) {
+            setAllOptions(allOptions.map(element => (questionAnswer.split('|').includes(`${element.optionId}`) ? { ...element, checked: true } : element)));
+
+          } else {
+            setAnswerBody(questionAnswer)
+          }
+
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -108,7 +143,8 @@ export default function ViewQuestion({ Question, setFullStyle, setHitQuestion, s
     };
 
     fetchData();
-  }, [Question, allOptions , questionAnswer]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [Question.id]);
 
   return (
     <div className="question-overlay d-flex  flex-column">
@@ -121,7 +157,7 @@ export default function ViewQuestion({ Question, setFullStyle, setHitQuestion, s
 
       </div>
       <div className="question-content">
-        <form action="/action_page.php" >
+        <form  >
 
           <p> {Question.questionBody} </p>
           <div class="row">
@@ -131,9 +167,9 @@ export default function ViewQuestion({ Question, setFullStyle, setHitQuestion, s
                   <span class={interactiveMode ? "option_point" : ""} id="basic-addon1">
                     <span className='check-box'>
                       {interactiveMode ? '' : <input
-                        checked= {option.checked}
+                        checked={option.checked}
                         type="checkbox" class="form-check-input " id={`${option.optionId}`}
-                        onChange={(event)=>handleCheckboxChange(event , option.optionId)}
+                        onChange={(event) => handleCheckboxChange(event, option.optionId)}
                         value="something"></input>}
 
                     </span>
@@ -143,17 +179,17 @@ export default function ViewQuestion({ Question, setFullStyle, setHitQuestion, s
                 </div>
               </div>
             ))}
-            {!interactiveMode && showSave && Question.type === 2 &&<EquationEditor placeholder = {"Enter your answer here."}  questionBody = {answerBody} setQuestionBody={setAnswerBody} />  }
+            {!interactiveMode && Question.type === 2 && <EquationEditor placeholder={"Enter your answer here."} questionBody={answerBody} setQuestionBody={setAnswerBody} />}
 
             {!isCheckboxValid && (
-              <div className="text-danger">{ Question.type === 1 ? "Please select at least one checkbox." : "Please enter your answer"}</div>
+              <div className="text-danger">{Question.type === 1 ? "Please select at least one checkbox." : "Please enter your answer"}</div>
             )}
           </div>
           {interactiveMode ? <div className={`question-buttons modal-footer`}>
-            <button onClick={handleDeleteQuestion} type="button" class="btn btn-primary">Delete </button>
-            <button style={style} onClick={handleEditTheQuestion} type="button" class="btn btn-primary ">Edit </button>
+            <button onClick={ handleDeleteQuestion} type="button" class="btn btn-primary">Delete </button>
+            <button style={style} onClick={ handleEditTheQuestion} type="button" class="btn btn-primary ">Edit </button>
           </div> : <div className={`question-buttons modal-footer`}>
-            {showSave && <button onClick={handleFormSubmit} type="submit" class="btn btn-primary">Save </button>}
+            {<button onClick={(event) => handleFormSubmit(event)} type="submit" class="btn btn-primary">Submit </button>}
           </div>}
         </form>
       </div>

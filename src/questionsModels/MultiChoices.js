@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import EquationEditor from "./textArea"
 import axios from "axios";
+import Swal from 'sweetalert2'
 
 export default function MultiChoices( {setIsPlaying ,  setHitQuestion, setFullStyle ,videoRef , editMode = false,  currentTimeInSec , isMutiChoicesVisiable, setIsMutiChoicesVisiable , question = {options:
   [{ optionId: 1, checked: false, value: "" }, { optionId: 2, checked: false, value: "" }] , questionBody : "" , answer : [] }}) {
@@ -25,7 +26,13 @@ export default function MultiChoices( {setIsPlaying ,  setHitQuestion, setFullSt
     setIsMutiChoicesVisiable(!isMutiChoicesVisiable);
 
   }
-
+  const sweetAlert = ({ title, text, icon }) => {
+    return Swal.fire({
+      title: `${title}`,
+      text: `${text}`,
+      icon: `${icon}`
+    });
+  }
   const formatResponse = () => {
     const formattedResponse = {
       question_body : questionBody,
@@ -47,7 +54,7 @@ export default function MultiChoices( {setIsPlaying ,  setHitQuestion, setFullSt
     const formattedResponse = formatResponse();
     if(editMode){
       axios.put(`http://localhost:8080/api/videos/1/questions/${question.id}` , formattedResponse).then((res)=>{
-        alert(res.data.message);
+        sweetAlert({ title: "Good job!", text: res.data.message, icon: "success" });
         const video = videoRef.current;
 
         handleCloseInnerModal();
@@ -59,7 +66,7 @@ export default function MultiChoices( {setIsPlaying ,  setHitQuestion, setFullSt
       })
     }else{
     axios.post("http://localhost:8080/api/videos/1/questions/" , formattedResponse).then((res)=>{
-      alert(res.data.message);
+      sweetAlert({ title: "Good job!", text: res.data.message, icon: "success" });
       handleCloseInnerModal();
     })
   }
@@ -95,7 +102,7 @@ export default function MultiChoices( {setIsPlaying ,  setHitQuestion, setFullSt
           <div style ={{height:"max-content"}}class="modal-dialog modal-fullscreen">
 
             <div class="modal-content">
-              <form action="/action_page.php" >
+              <form  >
 
                 <div class="modal-header">
                 </div>
@@ -105,7 +112,7 @@ export default function MultiChoices( {setIsPlaying ,  setHitQuestion, setFullSt
                     <EquationEditor  questionBody = {questionBody} setQuestionBody={setQuestionBody} />
                     
                     <div className='options-groups'>
-                      {allOptions.reverse().map(option => (
+                      {allOptions.map(option => (
                         <div class="input-group mb-3">
                           <span class="input-group-text" id="basic-addon1">
                             <span className='check-box'>
@@ -119,7 +126,7 @@ export default function MultiChoices( {setIsPlaying ,  setHitQuestion, setFullSt
                             </span>
                           </span>
                           <input required type="text" id={`value${option.optionId}`} onChange={(event) => handleOptionInput(event, option.optionId)} value={option.value} class="form-control" placeholder="Answer option" aria-label="Username" aria-describedby="basic-addon1"></input>
-                         { allOptions.length>2 && <button  className='trash-icon'><i onClick={()=>handleDeleteOption(option.optionId)} class="fa-solid fa-trash"></i></button>}
+                         { allOptions.length>2 && <button onClick={()=>handleDeleteOption(option.optionId)}  className='trash-icon'><i  class="fa-solid fa-trash"></i></button>}
                         </div>
                       ))}
                       {!isCheckboxValid && (

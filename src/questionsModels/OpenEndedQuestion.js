@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import EquationEditor from "./textArea"
 import axios from 'axios';
+import Swal from 'sweetalert2'
+
 export default function OpenEndedQuestion({setIsPlaying ,  setHitQuestion, setFullStyle ,videoRef , editMode ,currentTimeInSec, isOpenEndedQuestionVisiable, setIsOpenEndedQuestionVisiable , question = {  questionBody : ""  }}) {
   const style = {
     display: "block"
@@ -12,7 +14,13 @@ export default function OpenEndedQuestion({setIsPlaying ,  setHitQuestion, setFu
     setIsOpenEndedQuestionVisiable(!isOpenEndedQuestionVisiable);
 
   }
- 
+  const sweetAlert = ({ title, text, icon }) => {
+    return Swal.fire({
+      title: `${title}`,
+      text: `${text}`,
+      icon: `${icon}`
+    });
+  }
   const formatResponse = () => {
     const formattedResponse = {
       question_body : questionBody,
@@ -28,7 +36,7 @@ export default function OpenEndedQuestion({setIsPlaying ,  setHitQuestion, setFu
     const formattedResponse = formatResponse();
     if(editMode){
       axios.put(`http://localhost:8080/api/videos/1/questions/${question.id}` , formattedResponse).then((res)=>{
-        alert(res.data.message);
+        sweetAlert({ title: "Good job!", text: res.data.message, icon: "success" });
         const video = videoRef.current;
         handleCloseInnerModal();
         setHitQuestion(false);
@@ -38,7 +46,7 @@ export default function OpenEndedQuestion({setIsPlaying ,  setHitQuestion, setFu
       })
     }else{
     axios.post("http://localhost:8080/api/videos/1/questions/" , formattedResponse).then((res)=>{
-      alert(res.data.message);
+      sweetAlert({ title: "Good job!", text: res.data.message, icon: "success" });
       handleCloseInnerModal();
 
     })
@@ -55,7 +63,7 @@ export default function OpenEndedQuestion({setIsPlaying ,  setHitQuestion, setFu
           <div class="modal-dialog modal-fullscreen">
 
             <div class="modal-content">
-              <form action="/action_page.php" >
+              <form  >
 
                 <div class="modal-header">
                 </div>

@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import VolumeControl from "./Volume";
 import '../node_modules/@fortawesome/fontawesome-free/css/all.css';
 
-const TimeLine = ({videoRef ,setCurrentQuestionTime,setFullStyle, isPlaying , setHitQuestion ,setIsPlaying , questions, interactiveMode})=>{
+const TimeLine = ({videoRef ,setCurrentQuestionTime,setFullStyle, isPlaying , setHitQuestion ,setIsPlaying , questions=[], interactiveMode})=>{
 const progressBarRef = useRef(null);
 const [startPointPosition, setStartPointPosition] = useState(0);
 
@@ -100,6 +100,10 @@ const [startPointPosition, setStartPointPosition] = useState(0);
             const curr = (video.currentTime / video.duration) * 100;
             setProgress(curr);
             setProgressTime(formatTime(video.currentTime))
+            if (video.currentTime / video.duration === 1){
+                setIsPlaying(!setIsPlaying);
+            }
+
         };
 
         video.addEventListener('timeupdate', handleTimeUpdate);
