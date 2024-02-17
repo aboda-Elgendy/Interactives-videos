@@ -202,5 +202,23 @@ $router->addRoute('POST', '/api/videos/:videoID/questions/:questionId/answer', f
     echo json_encode($response);
 
 });
+$router->addRoute('PUT', '/api/videos/:videoID/questions/:questionId/answer', function ($videoID, $questionId,$connection) {
+    $req = json_decode( file_get_contents('php://input') );
+    $sql = "UPDATE  question_answers  set  answer = :answer,  student_id = :student_id,   question_id = :question_id,  created_at = :created_at  ";
+    $stmt = $connection->prepare($sql);
+    $created_at = date('Y-m-d');
+    $stmt->bindParam(':answer', $req->answer);
+    $stmt->bindParam(':question_id', $questionId);
+    $stmt->bindParam(':student_id', $req->student_id);
+    $stmt->bindParam(':created_at', $created_at);
+    $exe = $stmt->execute();
+    if($exe) {
+        $response = ['status' => 1, 'message' => 'Answer updated successfully.'];
 
+    }else {
+        $response = ['status' => 0, 'message' => 'Failed to update Answer.'];
+    }
+    echo json_encode($response);
+
+});
 $router->matchRoute();
